@@ -10,16 +10,12 @@ using System.Xml.Linq;
 namespace MySample
 {
 
-    class PositionDealer : IJobDealer
+    class PositionDealer : JobDealerPrototype
     {
         public Dictionary<string, string> positions = new Dictionary<string, string>();
-        public void DoJob(XElement e, XAttribute a)
+        public override void DoJob(XElement e, XAttribute a)
         {
-            if ("?"!=a.Value.ToString())
-            {
-                positions[e.Name.ToString()] = a.Value;
-            }
-            
+            positions[e.Name.ToString()] = a.Value;
         }
     }
 
@@ -54,11 +50,7 @@ namespace MySample
 
                 var content = ConvertUTF8toBIG5(e.Value.ToString());
                 int n=0;
-                if (positions[e.Name.ToString()].Contains("?"))
-                {
-
-                }
-                else if (positions[e.Name.ToString()].Contains("-"))
+                if (positions[e.Name.ToString()].Contains("-"))
                 {
                     int l=0, r=0,count=0;
                     Regex regex = new Regex(@"(?<start>\d+)-(?<end>\d+)");
@@ -85,7 +77,7 @@ namespace MySample
         }
     }
 
-    class DataToXMLDealer : IJobDealer
+    class DataToXMLDealer : JobDealerPrototype
     {
         public Dictionary<string, string> positions;
         public Byte[] buffer;
@@ -96,7 +88,6 @@ namespace MySample
             buffer = rawdata;
             root = r;
         }
-
         public string ConvertBIG5toUTF8(byte[] big5Array)
         {
             byte[] utf8Array = System.Text.Encoding.Convert(System.Text.Encoding.GetEncoding(950), System.Text.Encoding.UTF8, big5Array);
@@ -114,43 +105,19 @@ namespace MySample
             }
             return info.ToString();
         }
-        public void DoJob(XElement e, XAttribute a)
+        public override void DoJob(XElement e, XAttribute a)
         {
             if (positions.ContainsKey(e.Name.ToString()))
             {
-                int n = 0;
-                if (positions[e.Name.ToString()].Contains("?"))
+                int l = 0, r = 0;
+                GetRange(positions[e.Name.ToString()], out l, out r);
+                byte[] tmp = new byte[r - l + 1];
+                for (int i = l - 1; i < r; i++)
                 {
-
+                    tmp[i - (l - 1)] = buffer[i];
                 }
-                else if (positions[e.Name.ToString()].Contains("-"))
-                {
-
-                    int l = 0, r = 0;
-                    Regex regex = new Regex(@"(?<start>\d+)-(?<end>\d+)");
-                    var m = regex.Match(positions[e.Name.ToString()]);
-                    int.TryParse(m.Groups["start"].Value, out l);
-                    int.TryParse(m.Groups["end"].Value, out r);
-                    byte[] tmp = new byte[r-l+1];
-                    for (int i = l-1; i < r ; i++)
-                    {
-                        tmp[i-(l-1)] = buffer[i];
-                    }
-                    e.Value= ReplaceLowOrderASCIICharacters(ConvertBIG5toUTF8(tmp)).Trim();
-                }
-                else if (int.TryParse(positions[e.Name.ToString()], out n))
-                {
-                    byte[] tmp = new byte[1];
-                    tmp[0] = buffer[n];
-                    e.Value = ReplaceLowOrderASCIICharacters(ConvertBIG5toUTF8(tmp)).Trim();
-                }
+                e.Value = ReplaceLowOrderASCIICharacters(ConvertBIG5toUTF8(tmp)).Trim();
             }
-
-        }
-
-        public void OutputXMLFile(string filename)
-        {
-            root.Save(filename);
         }
     }
 
@@ -174,48 +141,40 @@ namespace MySample
             dataDealer.OutputByteFile("test.va");
         }
 
-        public static XElement MakeXMLFile(string tableNumber, Byte[] rawdata)
+        public static XElement MakeXML(string tableNumber, Byte[] rawdata)
         {
-            JswXML jswXML;
-            XElement b;
-            jswXML = new JswXML();
+            JswXML jswXML1= new JswXML();
             PositionDealer positionDealer = new PositionDealer();
-            jswXML.JobDealer.Add("Position", positionDealer);
-            b = jswXML.Parse(File.ReadAllText(tableNumber));
-            jswXML.ProcessNodeRecursively(b);
+            jswXML1.JobDealer.Add("Position", positionDealer);
+            XElement b = jswXML1.Parse(File.ReadAllText(tableNumber));
+            jswXML1.ProcessNodeRecursively(b);
 
-            XElement a;
-            a = jswXML.Parse(File.ReadAllText("EmptyXML.txt"));
-            //Byte[] rawdata=File.ReadAllBytes("Sample.va");
-            jswXML = new JswXML();
+            JswXML jswXML2 = new JswXML();
+            XElement a= jswXML2.Parse(File.ReadAllText(tableNumber));
             DataToXMLDealer dataToXMLDealer = new DataToXMLDealer(positionDealer.positions, rawdata, a);
-            jswXML.JobDealer.Add("MustDoForAnyNode", dataToXMLDealer);
-            jswXML.ProcessNodeRecursively(a);
-            //dataToXMLDealer.OutputXMLFile("test.xml");
+            jswXML2.JobDealer.Add("MustDoForAnyNode", dataToXMLDealer);
+            jswXML2.ProcessNodeRecursively(a);
+            jswXML2.RemoveAllAttributesRecursively(a);
             return dataToXMLDealer.root;
 
         }
+
         static void Main(string[] args)
         {
-            Object[] xElements = new Object[100];
-
             Byte[] buffer = new Byte[360];
-            int offset = 0;
-            int i = 0;
             XDocument doc = XDocument.Parse(File.ReadAllText("Frame.xml"));
+            ASCIIEncoding ascii = new ASCIIEncoding();
             using (var fs = File.OpenRead("Sample.va"))
             {
                 while (fs.Read(buffer, 0, 360) == 360)
                 {
-                    doc.Root.Add(MakeXMLFile("SchemaXML.txt", buffer));
+                    string n = ascii.GetString(buffer, 32, 2);
+                    var node = MakeXML("T"+ n + ".txt", buffer);
+                    node.Element("SEX").Value = "1";
+                    doc.Root.Add(node);
                 }
             }
             doc.Save("Final.xml");
-            i = 1;
-            //ReceiveFile();
-            //MakeXMLFile();
-
-
         }
     }
 }

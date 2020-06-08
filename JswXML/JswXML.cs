@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -11,6 +12,24 @@ namespace Jsw
     public interface IJobDealer
     {
         void DoJob(XElement e, XAttribute a);
+    }
+    public class JobDealerPrototype: IJobDealer
+    {
+        public virtual void DoJob(XElement e, XAttribute a) { }
+        public virtual void GetRange(string range, out int l, out int r)
+        {
+            if (range.Contains("-"))
+            {
+                Regex regex = new Regex(@"(?<start>\d+)-(?<end>\d+)");
+                var m = regex.Match(range);
+                int.TryParse(m.Groups["start"].Value, out l);
+                int.TryParse(m.Groups["end"].Value, out r);
+                return;
+            }
+            int.TryParse(range, out l);
+            int.TryParse(range, out r);
+            return;
+        }
     }
 
     public class JswXML 

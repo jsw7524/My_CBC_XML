@@ -1,0 +1,39 @@
+ <T01>
+  <IDNO Position="011-020" ></IDNO>
+  <NAME Position="021-032" ></NAME>
+  <ALIAS Position="071-074" />
+  <ENAME Position="075-104" />
+  <PASSNO Position="115-124"  />
+  <SEX  ></SEX>
+  <MARRY Position="125-125" ></MARRY>
+  <BIRTHD Position="105-111" ></BIRTHD>
+  <NATCOD Position="112-114" ></NATCOD>
+  <DOMCOD Position="337-339" ></DOMCOD>
+  <DOMICE Position="126-185" ></DOMICE>
+  <ADDCOD Position="340-342" ></ADDCOD>
+  <CURADD Position="186-245" ></CURADD>
+  <CURTEL Position="246-257" ></CURTEL>
+  <ACTTEL Position="349-360" ></ACTTEL>
+  <EMNAME Position="258-269"  />
+  <EMTELO Position="270-288" ></EMTELO>
+  <EMTELH Position="289-300" ></EMTELH>
+  <LOAN Position="301-301" ></LOAN>
+  <MICCOD Position="302-302" />
+  <MIKCOD Position="303-303" />
+  <MIDCOD Position="304-305"  />
+  <MIRCOD Position="306-307"  />
+  <MIDATB Position="308-314"  />
+  <MIDATE Position="315-321"  />
+  <POSCOD Position="322-325" ></POSCOD>
+  <SRVDAT Position="326-332" ></SRVDAT>
+  <SPENDY Position="333-334" ></SPENDY>
+  <SPENDM Position="335-336" ></SPENDM>
+  <IMPCLS Position="343-344"  />
+  <IMPLVL Position="345"  />
+  <ABRCOD Position="346" ></ABRCOD>
+  <ABRRAC Position="347-348" />
+  <CTMON  ></CTMON>
+  <CTDAY  ></CTDAY>
+  <UPDATE  ></UPDATE>
+  <RNAME   />
+ </T01>

@@ -61,10 +61,10 @@ namespace UnitTestProject1
             XElement a = jswXML.Parse(testData);
             jswXML.ProcessNodeRecursively(a);
         }
-        class TestJob1 : IJobDealer
+        class TestJob1 : JobDealerPrototype
         {
             public int count = 0;
-            public void DoJob(XElement e, XAttribute a)
+            public override void DoJob(XElement e, XAttribute a)
             {
                 Debug.Print(e.Name + "_" + a.Name + "_" + a.Value);
                 count++;
@@ -82,10 +82,10 @@ namespace UnitTestProject1
             Assert.AreEqual(3, testJob.count);
         }
 
-        class TestJob2 : IJobDealer
+        class TestJob2 : JobDealerPrototype
         {
             public int count = 0;
-            public void DoJob(XElement e, XAttribute a)
+            public override void DoJob(XElement e, XAttribute a)
             {
                 Debug.Print(e.Name.ToString());
                 count++;
