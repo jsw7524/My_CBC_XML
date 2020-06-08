@@ -174,28 +174,44 @@ namespace MySample
             dataDealer.OutputByteFile("test.va");
         }
 
-        public static void MakeXMLFile()
+        public static XElement MakeXMLFile(string tableNumber, Byte[] rawdata)
         {
             JswXML jswXML;
             XElement b;
             jswXML = new JswXML();
             PositionDealer positionDealer = new PositionDealer();
             jswXML.JobDealer.Add("Position", positionDealer);
-            b = jswXML.Parse(File.ReadAllText("SchemaXML.txt"));
+            b = jswXML.Parse(File.ReadAllText(tableNumber));
             jswXML.ProcessNodeRecursively(b);
 
             XElement a;
             a = jswXML.Parse(File.ReadAllText("EmptyXML.txt"));
-            var rawdata=File.ReadAllBytes("Sample.va");
+            //Byte[] rawdata=File.ReadAllBytes("Sample.va");
             jswXML = new JswXML();
             DataToXMLDealer dataToXMLDealer = new DataToXMLDealer(positionDealer.positions, rawdata, a);
             jswXML.JobDealer.Add("MustDoForAnyNode", dataToXMLDealer);
             jswXML.ProcessNodeRecursively(a);
-            dataToXMLDealer.OutputXMLFile("test.xml");
+            //dataToXMLDealer.OutputXMLFile("test.xml");
+            return dataToXMLDealer.root;
 
         }
         static void Main(string[] args)
         {
+            Object[] xElements = new Object[100];
+
+            Byte[] buffer = new Byte[360];
+            int offset = 0;
+            int i = 0;
+            XDocument doc = XDocument.Parse(File.ReadAllText("Frame.xml"));
+            using (var fs = File.OpenRead("Sample.va"))
+            {
+                while (fs.Read(buffer, 0, 360) == 360)
+                {
+                    doc.Root.Add(MakeXMLFile("SchemaXML.txt", buffer));
+                }
+            }
+            doc.Save("Final.xml");
+            i = 1;
             //ReceiveFile();
             //MakeXMLFile();
 

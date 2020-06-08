@@ -57,6 +57,9 @@
     <Content Include="EmptyXML.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Frame.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SchemaXML.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
