@@ -13,56 +13,60 @@ namespace UnitTestProject1
         [TestMethod]
         public void GetValueXML()
         {
-            dynamic data = JswXML.Parse(testData);
-            Assert.AreEqual("陳○○", data.NAME.Value);
+            JswXML jswXML = new JswXML();
+            XElement data = jswXML.Parse(testData);
+            Assert.AreEqual("陳○○", data.Element("NAME").Value);
         }
         [TestMethod]
         public void GetPositionXML()
         {
-            dynamic data = JswXML.Parse(testData);
-            Assert.AreEqual("021-032", data.NAME.Position);
+            JswXML jswXML = new JswXML();
+            XElement data = jswXML.Parse(testData);
+            Assert.AreEqual("021-032", data.Element("NAME").Attribute("Position").Value);
         }
 
         [TestMethod]
         public void ModifyXML()
         {
-            dynamic a = JswXML.Parse(testData);
-            a.NAME.Value = "abc";
-            Assert.AreEqual("abc", a.NAME.Value);
+            JswXML jswXML = new JswXML();
+            XElement a = jswXML.Parse(testData);
+            a.Element("NAME").Value = "abc";
+            Assert.AreEqual("abc", a.Element("NAME").Value);
         }
         [TestMethod]
         public void MakeNewXML()
         {
-            dynamic a = JswXML.Parse(testData);
-            a.NAME.Value = "abc";
-            a.IDNO.Value = "A123456789";
-            a.ALIAS.Value = "";
-            Assert.AreEqual("<T01>\r\n  <IDNO Position=\"011-020\">A123456789</IDNO>\r\n  <NAME Position=\"021-032\">abc</NAME>\r\n  <ALIAS Position=\"071-074\"></ALIAS>\r\n</T01>", a._root.ToString());
+            JswXML jswXML = new JswXML();
+            XElement a = jswXML.Parse(testData);
+            a.Element("NAME").Value = "abc";
+            a.Element("IDNO").Value = "A123456789";
+            a.Element("ALIAS").Value = "";
+            Assert.AreEqual("<T01>\r\n  <IDNO Position=\"011-020\">A123456789</IDNO>\r\n  <NAME Position=\"021-032\">abc</NAME>\r\n  <ALIAS Position=\"071-074\"></ALIAS>\r\n</T01>", a.ToString());
         }
 
         [TestMethod]
         public void RemoveXMLAllAttributes()
         {
             JswXML jswXML = new JswXML();
-            dynamic a = JswXML.Parse(testData);
-            a.NAME.Value = "abc";
-            jswXML.RemoveAllAttributesRecursively(a._root); 
-            Assert.AreEqual("<T01>\r\n  <IDNO>A222222222</IDNO>\r\n  <NAME>abc</NAME>\r\n  <ALIAS></ALIAS>\r\n</T01>", a._root.ToString());
+            XElement a = jswXML.Parse(testData);
+            a.Element("NAME").Value = "abc";
+            jswXML.RemoveAllAttributesRecursively(a);
+            Assert.AreEqual("<T01>\r\n  <IDNO>A222222222</IDNO>\r\n  <NAME>abc</NAME>\r\n  <ALIAS />\r\n</T01>", a.ToString());
         }
 
         [TestMethod]
         public void TravelXMLTree()
         {
             JswXML jswXML = new JswXML();
-            dynamic a = JswXML.Parse(testData);
-            jswXML.ProcessNodeRecursively(a._root);
+            XElement a = jswXML.Parse(testData);
+            jswXML.ProcessNodeRecursively(a);
         }
         class TestJob1 : IJobDealer
         {
             public int count = 0;
             public void DoJob(XElement e, XAttribute a)
             {
-                Debug.Print(e.Name + "_" + a.Name + "_" + a.Value );
+                Debug.Print(e.Name + "_" + a.Name + "_" + a.Value);
                 count++;
             }
         }
@@ -73,8 +77,8 @@ namespace UnitTestProject1
             JswXML jswXML = new JswXML();
             TestJob1 testJob = new TestJob1();
             jswXML.JobDealer.Add("Position", testJob);
-            dynamic a = JswXML.Parse(testData);
-            jswXML.ProcessNodeRecursively(a._root);
+            XElement a = jswXML.Parse(testData);
+            jswXML.ProcessNodeRecursively(a);
             Assert.AreEqual(3, testJob.count);
         }
 
@@ -94,8 +98,8 @@ namespace UnitTestProject1
             JswXML jswXML = new JswXML();
             TestJob2 testJob = new TestJob2();
             jswXML.JobDealer.Add("T01", testJob);
-            dynamic a = JswXML.Parse(testData);
-            jswXML.ProcessNodeRecursively(a._root);
+            XElement a = jswXML.Parse(testData);
+            jswXML.ProcessNodeRecursively(a);
             Assert.AreEqual(1, testJob.count);
         }
 
@@ -105,8 +109,8 @@ namespace UnitTestProject1
             JswXML jswXML = new JswXML();
             TestJob2 testJob = new TestJob2();
             jswXML.JobDealer.Add("MustDoForAnyNode", testJob);
-            dynamic a = JswXML.Parse(testData);
-            jswXML.ProcessNodeRecursively(a._root);
+            XElement a = jswXML.Parse(testData);
+            jswXML.ProcessNodeRecursively(a);
             Assert.AreEqual(4, testJob.count);
         }
     }

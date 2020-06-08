@@ -13,18 +13,19 @@ namespace Jsw
         void DoJob(XElement e, XAttribute a);
     }
 
-    public class JswXML : DynamicXml
+    public class JswXML 
     {
         public  Dictionary<string, IJobDealer> JobDealer = new Dictionary<string, IJobDealer>();
-
-        public JswXML(XElement root) :base( root)
-        {
-
-        }
 
         public JswXML() 
         {
 
+        }
+
+        public XElement Parse(string data)
+        {
+            XDocument doc = XDocument.Parse(data);
+            return doc.Root;
         }
 
         public  void ProcessNodeRecursively(XElement e)

@@ -126,7 +126,7 @@ namespace MySample
                 else if (positions[e.Name.ToString()].Contains("-"))
                 {
 
-                    int l = 0, r = 0, connt = 0;
+                    int l = 0, r = 0;
                     Regex regex = new Regex(@"(?<start>\d+)-(?<end>\d+)");
                     var m = regex.Match(positions[e.Name.ToString()]);
                     int.TryParse(m.Groups["start"].Value, out l);
@@ -151,7 +151,6 @@ namespace MySample
         public void OutputXMLFile(string filename)
         {
             root.Save(filename);
-            //File.WriteAllText(filename,root.ToString());
         }
     }
 
@@ -160,45 +159,45 @@ namespace MySample
         public static void ReceiveFile()
         {
             JswXML jswXML;
-            dynamic a;
+            XElement a;
             jswXML = new JswXML();
             PositionDealer positionDealer = new PositionDealer();
             jswXML.JobDealer.Add("Position", positionDealer);
-            a = JswXML.Parse(File.ReadAllText("SchemaXML.txt"));
-            jswXML.ProcessNodeRecursively(a._root);
+            a = jswXML.Parse(File.ReadAllText("SchemaXML.txt"));
+            jswXML.ProcessNodeRecursively(a);
 
             jswXML = new JswXML();
             DataToTxtDealer dataDealer = new DataToTxtDealer(positionDealer.positions);
             jswXML.JobDealer.Add("MustDoForAnyNode", dataDealer);
-            a = JswXML.Parse(File.ReadAllText("DataXML.txt"));
-            jswXML.ProcessNodeRecursively(a._root);
+            a = jswXML.Parse(File.ReadAllText("DataXML.txt"));
+            jswXML.ProcessNodeRecursively(a);
             dataDealer.OutputByteFile("test.va");
         }
 
         public static void MakeXMLFile()
         {
             JswXML jswXML;
-            dynamic b;
+            XElement b;
             jswXML = new JswXML();
             PositionDealer positionDealer = new PositionDealer();
             jswXML.JobDealer.Add("Position", positionDealer);
-            b = JswXML.Parse(File.ReadAllText("SchemaXML.txt"));
-            jswXML.ProcessNodeRecursively(b._root);
+            b = jswXML.Parse(File.ReadAllText("SchemaXML.txt"));
+            jswXML.ProcessNodeRecursively(b);
 
-            dynamic a;
-            a = JswXML.Parse(File.ReadAllText("EmptyXML.txt"));
+            XElement a;
+            a = jswXML.Parse(File.ReadAllText("EmptyXML.txt"));
             var rawdata=File.ReadAllBytes("Sample.va");
             jswXML = new JswXML();
-            DataToXMLDealer dataToXMLDealer = new DataToXMLDealer(positionDealer.positions, rawdata, a._root);
+            DataToXMLDealer dataToXMLDealer = new DataToXMLDealer(positionDealer.positions, rawdata, a);
             jswXML.JobDealer.Add("MustDoForAnyNode", dataToXMLDealer);
-            jswXML.ProcessNodeRecursively(a._root);
+            jswXML.ProcessNodeRecursively(a);
             dataToXMLDealer.OutputXMLFile("test.xml");
 
         }
         static void Main(string[] args)
         {
             //ReceiveFile();
-            MakeXMLFile();
+            //MakeXMLFile();
 
 
         }
