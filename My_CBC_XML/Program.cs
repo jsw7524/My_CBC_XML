@@ -6,10 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-
 namespace MySample
 {
-
     class PositionDealer : JobDealerPrototype
     {
         public Dictionary<string, string> positions = new Dictionary<string, string>();
@@ -18,65 +16,6 @@ namespace MySample
             positions[e.Name.ToString()] = a.Value;
         }
     }
-
-    class DataToTxtDealer : IJobDealer
-    {
-        public Dictionary<string, string> positions;
-        public Byte[] buffer= new Byte[360];
-        public DataToTxtDealer(Dictionary<string, string> p)
-        {
-            positions = p;
-            for (int i = 0; i < 360; i++)
-            {
-                buffer[i] = 32;
-            }
-        }
-
-        public byte[] ConvertUTF8toBIG5(string strInput)
-        {
-            byte[] strut8 = System.Text.Encoding.UTF8.GetBytes(strInput);
-            return System.Text.Encoding.Convert(System.Text.Encoding.UTF8, System.Text.Encoding.GetEncoding(950), strut8);
-        }
-
-        public void DoJob(XElement e, XAttribute a)
-        {
-
-            if (positions.ContainsKey(e.Name.ToString()))
-            {
-                if (""==e.Value.ToString())
-                {
-                    return;
-                }
-
-                var content = ConvertUTF8toBIG5(e.Value.ToString());
-                int n=0;
-                if (positions[e.Name.ToString()].Contains("-"))
-                {
-                    int l=0, r=0,count=0;
-                    Regex regex = new Regex(@"(?<start>\d+)-(?<end>\d+)");
-                    var m = regex.Match(positions[e.Name.ToString()]);
-                    int.TryParse(m.Groups["start"].Value, out l);
-                    int.TryParse(m.Groups["end"].Value, out r);
-                    for (int i = l-1; i <r && count < content.Length; i++)
-                    {
-                        buffer[i] = content[i-(l-1)];
-                        count += 1;
-                    }
-
-                }
-                else if(int.TryParse(positions[e.Name.ToString()], out n))
-                {
-                    buffer[n] = content[0];
-                }
-            }
-        }
-
-        public void OutputByteFile(string filename)
-        {
-            File.WriteAllBytes(filename, buffer);
-        }
-    }
-
     class DataToXMLDealer : JobDealerPrototype
     {
         public Dictionary<string, string> positions;
@@ -100,8 +39,9 @@ namespace MySample
             {
                 int ss = (int)cc;
                 if (((ss >= 0) && (ss <= 8)) || ((ss >= 11) && (ss <= 12)) || ((ss >= 14) && (ss <= 32)))
-                    info.AppendFormat(" ", ss);//&#x{0:X};
-                else info.Append(cc);
+                    info.AppendFormat(" ", ss);
+                else 
+                    info.Append(cc);
             }
             return info.ToString();
         }
@@ -120,27 +60,8 @@ namespace MySample
             }
         }
     }
-
     class Program
     {
-        public static void ReceiveFile()
-        {
-            JswXML jswXML;
-            XElement a;
-            jswXML = new JswXML();
-            PositionDealer positionDealer = new PositionDealer();
-            jswXML.JobDealer.Add("Position", positionDealer);
-            a = jswXML.Parse(File.ReadAllText("SchemaXML.txt"));
-            jswXML.ProcessNodeRecursively(a);
-
-            jswXML = new JswXML();
-            DataToTxtDealer dataDealer = new DataToTxtDealer(positionDealer.positions);
-            jswXML.JobDealer.Add("MustDoForAnyNode", dataDealer);
-            a = jswXML.Parse(File.ReadAllText("DataXML.txt"));
-            jswXML.ProcessNodeRecursively(a);
-            dataDealer.OutputByteFile("test.va");
-        }
-
         public static XElement MakeXML(string tableNumber, Byte[] rawdata)
         {
             JswXML jswXML1= new JswXML();
@@ -156,9 +77,7 @@ namespace MySample
             jswXML2.ProcessNodeRecursively(a);
             jswXML2.RemoveAllAttributesRecursively(a);
             return dataToXMLDealer.root;
-
         }
-
         static void Main(string[] args)
         {
             Byte[] buffer = new Byte[360];

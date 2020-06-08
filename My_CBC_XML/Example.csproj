@@ -51,12 +51,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataXML.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="EmptyXML.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Frame.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -68,9 +62,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="A222222222.VA">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Sample.va">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
