@@ -1,0 +1,39 @@
+ <T01>
+  <IDNO  ></IDNO>
+  <NAME ></NAME>
+  <ALIAS  />
+  <ENAME  />
+  <PASSNO  />
+  <SEX  ></SEX>
+  <MARRY  ></MARRY>
+  <BIRTHD ></BIRTHD>
+  <NATCOD  ></NATCOD>
+  <DOMCOD ></DOMCOD>
+  <DOMICE ></DOMICE>
+  <ADDCOD  ></ADDCOD>
+  <CURADD></CURADD>
+  <CURTEL  ></CURTEL>
+  <ACTTEL  ></ACTTEL>
+  <EMNAME   />
+  <EMTELO  ></EMTELO>
+  <EMTELH  ></EMTELH>
+  <LOAN  ></LOAN>
+  <MICCOD  />
+  <MIKCOD  />
+  <MIDCOD  />
+  <MIRCOD  />
+  <MIDATB  />
+  <MIDATE   />
+  <POSCOD  ></POSCOD>
+  <SRVDAT ></SRVDAT>
+  <SPENDY  ></SPENDY>
+  <SPENDM ></SPENDM>
+  <IMPCLS   />
+  <IMPLVL   />
+  <ABRCOD  ></ABRCOD>
+  <ABRRAC  />
+  <CTMON  ></CTMON>
+  <CTDAY  ></CTDAY>
+  <UPDATE></UPDATE>
+  <RNAME  />
+ </T01>
